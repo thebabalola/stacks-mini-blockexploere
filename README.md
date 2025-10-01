@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stacks Account History - Mini Block Explorer
+
+A simple mini-block-explorer for viewing Stacks blockchain transaction history. This Next.js application allows users to connect their Stacks wallet or search for any valid Stacks address to view transaction history with pagination.
+
+## Features
+
+- 🔗 **Wallet Connection**: Connect your Stacks wallet (Leather, Xverse, etc.)
+- 🔍 **Address Search**: Search for any valid Stacks mainnet address
+- 📄 **Transaction History**: View detailed transaction history with pagination
+- ⚡ **Load More**: Paginated results (20 transactions per page)
+- 🎨 **Clean UI**: Simple and intuitive interface
 
 ## Getting Started
 
-First, run the development server:
-
+1. Install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Run the development server:
+```bash
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## How It Works
 
-## Learn More
+1. **Connect Wallet**: Click "Connect Wallet" to connect your Stacks wallet
+2. **Search Address**: Enter any valid Stacks mainnet address (starts with "SP") in the search bar
+3. **View History**: Browse through transaction history with pagination
+4. **Load More**: Click "Load More" to fetch additional transactions
 
-To learn more about Next.js, take a look at the following resources:
+## Technical Details
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Network**: Stacks Mainnet only
+- **Pagination**: 20 transactions per page
+- **API**: Uses Hiro's Stacks API for transaction data
+- **Framework**: Next.js 15 with TypeScript
+- **Styling**: Tailwind CSS
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+```
+├── components/          # React components
+│   ├── navbar.tsx      # Navigation bar with search
+│   ├── txns-list.tsx   # Transaction list component
+│   └── txn-details.tsx # Individual transaction details
+├── hooks/              # Custom React hooks
+│   └── use-stacks.ts   # Stacks wallet integration
+├── lib/                # Utility functions
+│   ├── fetch-address-transactions.ts
+│   └── stx-utils.ts
+└── src/app/            # Next.js app router pages
+    ├── [address]/      # Dynamic address page
+    └── page.tsx        # Home page
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Built With
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Next.js](https://nextjs.org) - React framework
+- [@stacks/connect](https://github.com/stacks-network/connect) - Stacks wallet integration
+- [Tailwind CSS](https://tailwindcss.com) - Styling
+- [TypeScript](https://www.typescriptlang.org) - Type safety
