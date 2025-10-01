@@ -9,6 +9,7 @@ import {
   export function useStacks() {
 	// Initially when the user is not logged in, userData is null
 	const [userData, setUserData] = useState<UserData | null>(null);
+	const [isClient, setIsClient] = useState(false);
   
 	// create application config that allows
 	// storing authentication state in browser's local storage
@@ -19,7 +20,7 @@ import {
   
 	function connectWallet() {
 	  // Only run on client side
-	  if (typeof window === 'undefined') return;
+	  if (!isClient) return;
 	  
 	  try {
 		showConnect({
@@ -49,12 +50,17 @@ import {
 	  setUserData(null);
 	}
   
+	// Set client flag on mount
+	useEffect(() => {
+	  setIsClient(true);
+	}, []);
+
 	// When the page first loads, if the user is already signed in,
 	// set the userData
 	// If the user has a pending sign-in instead, resume the sign-in flow
 	useEffect(() => {
 	  // Only run on client side
-	  if (typeof window === 'undefined') return;
+	  if (!isClient) return;
 	  
 	  try {
 		if (userSession.isUserSignedIn()) {
@@ -71,7 +77,7 @@ import {
 		// Reload the page to start fresh
 		window.location.reload();
 	  }
-	}, []);
+	}, [isClient]);
   
 	// return the user data, connect wallet function, and disconnect wallet function
 	return { userData, connectWallet, disconnectWallet };

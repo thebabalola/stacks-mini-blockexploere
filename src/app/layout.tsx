@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-sans">
+      <body className="font-sans" suppressHydrationWarning={true}>
         <div className="flex min-h-screen flex-col gap-8 w-full">
           <Navbar />
           {children}
