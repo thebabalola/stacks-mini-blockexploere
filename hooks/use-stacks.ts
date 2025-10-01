@@ -18,18 +18,28 @@ import {
 	const userSession = new UserSession({ appConfig });
   
 	function connectWallet() {
-	  showConnect({
-		appDetails: {
-		  name: "Stacks Account History",
-		  icon: "https://cryptologos.cc/logos/stacks-stx-logo.png",
-		},
-		onFinish: () => {
-		  // reload the webpage when wallet connection succeeds
-		  // to ensure that the user session gets populated from local storage
-		  window.location.reload();
-		},
-		userSession,
-	  });
+	  // Only run on client side
+	  if (typeof window === 'undefined') return;
+	  
+	  try {
+		showConnect({
+		  appDetails: {
+			name: "Stacks Account History",
+			icon: "https://cryptologos.cc/logos/stacks-stx-logo.png",
+		  },
+		  onFinish: () => {
+			// reload the webpage when wallet connection succeeds
+			// to ensure that the user session gets populated from local storage
+			window.location.reload();
+		  },
+		  userSession,
+		});
+	  } catch (error) {
+		console.error('Error connecting wallet:', error);
+		// Clear localStorage and reload if there's an error
+		localStorage.clear();
+		window.location.reload();
+	  }
 	}
   
 	function disconnectWallet() {
@@ -43,12 +53,23 @@ import {
 	// set the userData
 	// If the user has a pending sign-in instead, resume the sign-in flow
 	useEffect(() => {
-	  if (userSession.isUserSignedIn()) {
-		setUserData(userSession.loadUserData());
-	  } else if (userSession.isSignInPending()) {
-		userSession.handlePendingSignIn().then((userData) => {
-		  setUserData(userData);
-		});
+	  // Only run on client side
+	  if (typeof window === 'undefined') return;
+	  
+	  try {
+		if (userSession.isUserSignedIn()) {
+		  setUserData(userSession.loadUserData());
+		} else if (userSession.isSignInPending()) {
+		  userSession.handlePendingSignIn().then((userData) => {
+			setUserData(userData);
+		  });
+		}
+	  } catch (error) {
+		// Clear localStorage if there's a session data compatibility issue
+		console.warn('Session data compatibility issue, clearing localStorage:', error);
+		localStorage.clear();
+		// Reload the page to start fresh
+		window.location.reload();
 	  }
 	}, []);
   
