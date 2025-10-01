@@ -1,5 +1,4 @@
 import type {
-	FetchAddressTransactionsResponse,
 	Transaction,
   } from "../lib/fetch-address-transactions";
   import { abbreviateTxnId, abbreviateAddress } from "../lib/stx-utils";
@@ -14,7 +13,7 @@ import type {
   import Link from "next/link";
   
   interface TransactionDetailProps {
-	result: FetchAddressTransactionsResponse["results"][number];
+	result: Transaction;
   }
   
   // Each component will display the following pieces of information
@@ -37,41 +36,41 @@ import type {
   function getTransactionInformationByType(
 	result: TransactionDetailProps["result"]
   ): TransactionInformationByType {
-	if (result.tx.tx_type === "coinbase") {
-	  return {
-		primaryTitle: `Block #${result.tx.block_height}`,
+	if (result.tx_type === "coinbase") {
+		return {
+		primaryTitle: `Block #${result.block_height}`,
 		secondaryTitle: "",
 		tags: ["Coinbase"],
 	  };
 	}
   
-	if (result.tx.tx_type === "token_transfer") {
+	if (result.tx_type === "token_transfer") {
 	  return {
 		primaryTitle: `Transfer ${(
-		  Number.parseFloat(result.tx.token_transfer.amount) / 1_000_000
+		  Number.parseFloat(result.token_transfer.amount) / 1_000_000
 		).toFixed(2)} STX`,
 		secondaryTitle: "",
 		tags: ["Token Transfer"],
 	  };
 	}
   
-	if (result.tx.tx_type === "smart_contract") {
+	if (result.tx_type === "smart_contract") {
 	  return {
-		primaryTitle: result.tx.smart_contract.contract_id,
+		primaryTitle: result.smart_contract.contract_id,
 		secondaryTitle: "",
 		tags: ["Contract Deployment"],
 	  };
 	}
   
-	if (result.tx.tx_type === "contract_call") {
+	if (result.tx_type === "contract_call") {
 	  return {
-		primaryTitle: result.tx.contract_call.function_name,
-		secondaryTitle: result.tx.contract_call.contract_id.split(".")[1],
+		primaryTitle: result.contract_call.function_name,
+		secondaryTitle: result.contract_call.contract_id.split(".")[1],
 		tags: ["Contract Call"],
 	  };
 	}
   
-	if (result.tx.tx_type === "poison_microblock") {
+	if (result.tx_type === "poison_microblock") {
 	  return {
 		primaryTitle: "Microblock",
 		secondaryTitle: "",
@@ -86,7 +85,7 @@ import type {
 	};
   }
   export function TransactionDetail({ result }: TransactionDetailProps) {
-	const Icon = TxTypeIcon[result.tx.tx_type];
+	const Icon = TxTypeIcon[result.tx_type as keyof typeof TxTypeIcon];
 	const { primaryTitle, secondaryTitle, tags } =
 	  getTransactionInformationByType(result);
   
@@ -110,9 +109,9 @@ import type {
 			  <span className="font-normal">
 				By{" "}
 				<Link
-				  href={`/address/${result.tx.sender_address}`}
+				  href={`/address/${result.sender_address}`}
 				  className="hover:underline transition-all"
-				>{`${abbreviateAddress(result.tx.sender_address)}`}</Link>
+				>{`${abbreviateAddress(result.sender_address)}`}</Link>
 			  </span>
 			</div>
 		  </div>
@@ -120,17 +119,17 @@ import type {
   
 		<div className="flex flex-col items-end gap-2">
 		  <div className="flex items-center gap-2">
-			<span>{abbreviateTxnId(result.tx.tx_id)}</span>
+			<span>{abbreviateTxnId(result.tx_id)}</span>
 			<span>•</span>
 			<span suppressHydrationWarning>
-			  {new Date(result.tx.block_time).toLocaleTimeString()}
+			  {new Date(result.block_time).toLocaleTimeString()}
 			</span>
 		  </div>
   
 		  <div className="flex items-center gap-1 font-bold text-xs text-gray-500">
-			<span>Block #{result.tx.block_height}</span>
+			<span>Block #{result.block_height}</span>
 			<span>•</span>
-			<span>Nonce {result.tx.nonce}</span>
+			<span>Nonce {result.nonce}</span>
 		  </div>
 		</div>
 	  </div>

@@ -9,16 +9,15 @@ interface FetchAddressTransactionsArgs {
 	limit: number;
 	offset: number;
 	total: number;
-	results: Array<{
-	  tx: Transaction;
-	  stx_sent: string;
-	  stx_received: string;
-	  events: {
-		stx: TransactionEvent;
-		ft: TransactionEvent;
-		nft: TransactionEvent;
-	  };
-	}>;
+	results: Transaction[];
+  }
+
+  // More flexible type for actual API response
+  export interface ApiTransactionResponse {
+	limit: number;
+	offset: number;
+	total: number;
+	results: Transaction[]; // Use proper Transaction type
   }
   
   // Intermediary types of transactions we get from Hiro's APIs
@@ -31,6 +30,8 @@ interface FetchAddressTransactionsArgs {
 	block_height: number;
 	block_time: number;
 	tx_status: string;
+	fee_rate: string;
+	sponsored: boolean;
 	tx_type:
 	  | "coinbase"
 	  | "token_transfer"
@@ -78,11 +79,6 @@ interface FetchAddressTransactionsArgs {
 	| ContractCallTransaction
 	| PoisonMicroblockTransaction;
   
-  interface TransactionEvent {
-	transfer: number;
-	mint: number;
-	burn: number;
-  }
 
   // Function to fetch address transactions
   export async function fetchAddressTransactions(
@@ -100,7 +96,15 @@ interface FetchAddressTransactionsArgs {
 	  }
 	  
 	  const data = await response.json();
-	  return data;
+	  console.log('Raw API response:', data);
+	  console.log('First result:', data.results?.[0]);
+	  
+	  // Ensure we have the expected structure
+	  if (!data.results || !Array.isArray(data.results)) {
+		throw new Error('Invalid API response structure');
+	  }
+	  
+	  return data as FetchAddressTransactionsResponse;
 	} catch (error) {
 	  console.error('Error fetching address transactions:', error);
 	  throw error;

@@ -19,6 +19,10 @@ export function TransactionsList({
 }: TransactionsListProps) {
   const [allTxns, setAllTxns] = useState(transactions);
 
+  // Debug: Log the transactions data to see the structure
+  console.log('TransactionsList received transactions:', transactions);
+  console.log('First transaction:', transactions.results[0]);
+
   // Load another 20 txns
   async function loadMoreTxns() {
       
@@ -38,14 +42,32 @@ export function TransactionsList({
     });
   }
 
+  // Check if we have valid data
+  if (!allTxns || !allTxns.results || allTxns.results.length === 0) {
+    return (
+      <div className="flex flex-col gap-4">
+        <div className="text-center text-gray-400">
+          No transactions found for this address.
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col border rounded-md divide-y border-gray-800 divide-gray-800">
-        {allTxns.results.map((tx: FetchAddressTransactionsResponse['results'][0]) => (
-          <div key={tx.tx.tx_id}>
-            <TransactionDetail result={tx} />
-          </div>
-        ))}
+        {allTxns.results.map((tx: FetchAddressTransactionsResponse['results'][0], index: number) => {
+          // Add safety checks for the transaction data
+          if (!tx || !tx.tx_id) {
+            console.warn('Invalid transaction data at index', index, tx);
+            return null;
+          }
+          return (
+            <div key={tx.tx_id}>
+              <TransactionDetail result={tx} />
+            </div>
+          );
+        })}
       </div>
       <button
         type="button"
